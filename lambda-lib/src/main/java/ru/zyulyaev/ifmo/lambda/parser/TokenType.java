@@ -9,5 +9,6 @@ enum TokenType {
     OPEN,
     CLOSE,
     WHITESPACE,
-    LITERAL
+    LITERAL,
+    EOF
 }
