@@ -14,9 +14,9 @@ public class TokenizerTest {
     private void test(String expression, Token... tokens) throws IOException, UnexpectedCharacterException {
         Tokenizer tokenizer = new Tokenizer(new BufferedReader(new StringReader(expression)));
         for (Token token : tokens) {
-            Assert.assertEquals(tokenizer.next(), token);
+            Assert.assertEquals(token, tokenizer.next());
         }
-        Assert.assertEquals(tokenizer.next(), Token.EOF);
+        Assert.assertEquals(Token.EOF, tokenizer.next());
     }
 
     private Token lit(String x) {
@@ -59,6 +59,23 @@ public class TokenizerTest {
                 lit("x15```"),
                 Token.WHITESPACE,
                 lit("y01")
+        );
+    }
+
+    @Test
+    public void test5() throws IOException, UnexpectedCharacterException {
+        test("f(x,y,g(z))",
+                lit("f"),
+                Token.OPEN,
+                lit("x"),
+                Token.COMMA,
+                lit("y"),
+                Token.COMMA,
+                lit("g"),
+                Token.OPEN,
+                lit("z"),
+                Token.CLOSE,
+                Token.CLOSE
         );
     }
 }

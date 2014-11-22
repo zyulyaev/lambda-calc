@@ -39,6 +39,7 @@ class Tokenizer {
         switch (c) {
             case '\\': return Token.LAMBDA;
             case '.': return Token.DOT;
+            case ',': return Token.COMMA;
             case '(': return Token.OPEN;
             case ')': return Token.CLOSE;
             case ' ':

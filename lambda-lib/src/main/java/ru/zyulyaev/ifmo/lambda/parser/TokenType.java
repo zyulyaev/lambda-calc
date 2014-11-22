@@ -6,6 +6,7 @@ package ru.zyulyaev.ifmo.lambda.parser;
 enum TokenType {
     LAMBDA,
     DOT,
+    COMMA,
     OPEN,
     CLOSE,
     WHITESPACE,

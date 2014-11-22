@@ -14,7 +14,7 @@ public class ExpressionParserTest {
     private final ExpressionParser parser = new ExpressionParser();
 
     private void test(String expression, Expression valid) throws ExpressionParserException {
-        Assert.assertEquals(parser.parse(expression), valid);
+        Assert.assertEquals(valid, parser.parse(expression));
     }
 
     private Expression abs(String var, Expression expr) {

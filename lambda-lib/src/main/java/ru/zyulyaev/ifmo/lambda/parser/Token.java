@@ -8,6 +8,7 @@ import java.util.Objects;
 class Token {
     public static final Token LAMBDA = new Token(TokenType.LAMBDA);
     public static final Token DOT = new Token(TokenType.DOT);
+    public static final Token COMMA = new Token(TokenType.COMMA);
     public static final Token OPEN = new Token(TokenType.OPEN);
     public static final Token CLOSE = new Token(TokenType.CLOSE);
     public static final Token WHITESPACE = new Token(TokenType.WHITESPACE);
