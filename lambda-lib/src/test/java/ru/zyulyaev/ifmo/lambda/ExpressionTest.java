@@ -2,7 +2,6 @@ package ru.zyulyaev.ifmo.lambda;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ru.zyulyaev.ifmo.lambda.parser.ExpressionParser;
 import ru.zyulyaev.ifmo.lambda.parser.ExpressionParserException;
 
 import java.util.Collections;
@@ -12,14 +11,8 @@ import java.util.Set;
 /**
  * @author zyulyaev
  */
-public class ExpressionTest {
-    private final ExpressionParser parser = new ExpressionParser();
-
-    private Expression parse(String expr) throws ExpressionParserException {
-        return parser.parse(expr);
-    }
-
-    private void testToString(String before, String after) throws ExpressionParserException {
+public class ExpressionTest extends BaseExpressionTest {
+   private void testToString(String before, String after) throws ExpressionParserException {
         Assert.assertEquals(after, parse(before).toString());
     }
 
@@ -90,38 +83,5 @@ public class ExpressionTest {
     @Test(expected = FreshnessConditionException.class)
     public void testSubstituteFailed2() throws ExpressionParserException, FreshnessConditionException {
         testSubstituteFailed("\\a.\\b.a b c (\\d.e \\f.g) h", "g", "\\x.t \\y.a t y");
-    }
-
-    private void testNormalize(String denorm, String norm) throws ExpressionParserException {
-        Assert.assertEquals(parse(norm), parse(denorm).accept(StandardExpressionVisitor.NORMALIZER));
-    }
-
-    @Test
-    public void testNormalize1() throws ExpressionParserException {
-        testNormalize("(\\a.a) b", "b");
-    }
-
-    @Test
-    public void testNormalize2() throws ExpressionParserException {
-        testNormalize("(\\a.a a) (\\a.a a)", "(\\a.a a) (\\a.a a)");
-    }
-
-    @Test
-    public void testNormalize3() throws ExpressionParserException {
-        testNormalize("(\\a.a) (\\c.d) q", "d");
-    }
-
-    @Test
-    public void testNormalize4() throws ExpressionParserException {
-        testNormalize("\\a.\\b.a b c (\\d.e \\f.g) h", "\\a.\\b.a b c (\\d.e \\f.g) h");
-    }
-
-    private void testToSki(String before, String after) throws ExpressionParserException {
-        Assert.assertEquals(after, parse(before).accept(StandardExpressionVisitor.SKI_CONVERTER).toString());
-    }
-
-    @Test
-    public void testToSki1() throws ExpressionParserException {
-        testToSki("\\x.\\y.y x", "((S (K (S I))) ((S (K K)) I))");
     }
 }
