@@ -93,7 +93,7 @@ public class ExpressionTest {
     }
 
     private void testNormalize(String denorm, String norm) throws ExpressionParserException {
-        Assert.assertEquals(parse(norm), parse(denorm).normalize());
+        Assert.assertEquals(parse(norm), parse(denorm).accept(StandardExpressionVisitor.NORMALIZER));
     }
 
     @Test
@@ -117,7 +117,7 @@ public class ExpressionTest {
     }
 
     private void testToSki(String before, String after) throws ExpressionParserException {
-        Assert.assertEquals(after, parse(before).toSki().toString());
+        Assert.assertEquals(after, parse(before).accept(StandardExpressionVisitor.SKI_CONVERTER).toString());
     }
 
     @Test

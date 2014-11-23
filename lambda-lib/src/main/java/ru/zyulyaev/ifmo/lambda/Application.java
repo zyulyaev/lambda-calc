@@ -2,7 +2,6 @@ package ru.zyulyaev.ifmo.lambda;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -45,19 +44,6 @@ public class Application implements Expression {
     }
 
     @Override
-    public Expression normalize() {
-        final Expression leftNormalized = left.normalize();
-        final Expression rightNormalized = right.normalize();
-        return leftNormalized.accept(new NormalizeVisitor(rightNormalized))
-                .orElseGet(() -> new Application(leftNormalized, rightNormalized));
-    }
-
-    @Override
-    public Expression toSki() {
-        return new Application(left.toSki(), right.toSki());
-    }
-
-    @Override
     public <T> T accept(ExpressionVisitor<T> visitor) {
         return visitor.visit(this);
     }
@@ -79,32 +65,5 @@ public class Application implements Expression {
     @Override
     public int hashCode() {
         return 31 * left.hashCode() + right.hashCode();
-    }
-
-    private static class NormalizeVisitor implements ExpressionVisitor<Optional<Expression>> {
-        private final Expression rightNormalized;
-
-        public NormalizeVisitor(Expression rightNormalized) {
-            this.rightNormalized = rightNormalized;
-        }
-
-        @Override
-        public Optional<Expression> visit(Abstraction abstraction) {
-            try {
-                return Optional.of(abstraction.getExpression().substitute(abstraction.getVariable(), rightNormalized));
-            } catch (FreshnessConditionException e) {
-                return Optional.empty();
-            }
-        }
-
-        @Override
-        public Optional<Expression> visit(Application application) {
-            return Optional.empty();
-        }
-
-        @Override
-        public Optional<Expression> visit(Variable variable) {
-            return Optional.empty();
-        }
     }
 }

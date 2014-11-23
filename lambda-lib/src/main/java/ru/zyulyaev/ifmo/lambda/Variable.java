@@ -15,6 +15,10 @@ public class Variable implements Expression {
         this.freeVariables = Collections.singleton(name);
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public Set<String> getFreeVariables() {
         return freeVariables;
@@ -23,16 +27,6 @@ public class Variable implements Expression {
     @Override
     public Expression substitute(String variable, Expression expression) throws FreshnessConditionException {
         return name.equals(variable) ? expression : this;
-    }
-
-    @Override
-    public Expression normalize() {
-        return this;
-    }
-
-    @Override
-    public Expression toSki() {
-        return this;
     }
 
     @Override

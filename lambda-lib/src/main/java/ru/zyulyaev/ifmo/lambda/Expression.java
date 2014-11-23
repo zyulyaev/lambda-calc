@@ -20,16 +20,6 @@ public interface Expression {
      */
     Expression substitute(String variable, Expression expression) throws FreshnessConditionException;
 
-    /**
-     * @return equivalent expression with all possible beta-reductions done
-     */
-    Expression normalize();
-
-    /**
-     * @return equivalent lambda expression made of S, K, I combinators without abstractions
-     */
-    Expression toSki();
-
     <T> T accept(ExpressionVisitor<T> visitor);
 
     /**

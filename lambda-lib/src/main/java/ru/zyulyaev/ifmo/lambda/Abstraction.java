@@ -11,28 +11,6 @@ public class Abstraction implements Expression {
     private final String variable;
     private final Expression expression;
     private Set<String> freeVariables;
-    private final ExpressionVisitor<Expression> skiVisitor = new ExpressionVisitor<Expression>() {
-        @Override
-        public Expression visit(Abstraction abstraction) {
-            return new Abstraction(variable, abstraction.toSki()).toSki();
-        }
-
-        @Override
-        public Expression visit(Application application) {
-            return new Application(
-                    new Application(
-                            new Variable("S"),
-                            new Abstraction(variable, application.getLeft()).toSki()
-                    ),
-                    new Abstraction(variable, application.getRight()).toSki()
-            );
-        }
-
-        @Override
-        public Expression visit(Variable variable) {
-            return new Variable("I");
-        }
-    };
 
     public Abstraction(String variable, Expression expression) {
         this.variable = variable;
@@ -66,21 +44,6 @@ public class Abstraction implements Expression {
             throw new FreshnessConditionException();
         }
         return new Abstraction(this.variable, this.expression.substitute(variable, expression));
-    }
-
-    @Override
-    public Expression normalize() {
-        Expression normalized = expression.normalize();
-        return normalized == expression ? this : new Abstraction(variable, normalized);
-    }
-
-    @Override
-    public Expression toSki() {
-        if (expression.getFreeVariables().contains(variable)) {
-            return expression.accept(skiVisitor);
-        } else {
-            return new Application(new Variable("K"), expression.toSki());
-        }
     }
 
     @Override
