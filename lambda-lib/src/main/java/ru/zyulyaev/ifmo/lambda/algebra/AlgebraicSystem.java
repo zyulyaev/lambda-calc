@@ -13,7 +13,7 @@ public class AlgebraicSystem<V extends AlgebraicVariable<V, F, E>, F extends Alg
         this.equations = new ArrayList<>(equations);
     }
 
-    public AlgebraicSystem trySolve() {
+    public AlgebraicSystem<V, F, E> trySolve() {
         AlgebraicSystem<V, F, E> solution = new AlgebraicSystem<>(equations);
         //noinspection StatementWithEmptyBody
         while (!solution.isSolved() && !solution.isInconsistent()) {
