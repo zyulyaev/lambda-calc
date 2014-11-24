@@ -6,15 +6,15 @@ import java.util.stream.Collectors;
 /**
  * Created by nikita on 22.11.14.
  */
-public class AlgebraicSystem {
-    private final List<AlgebraicEquation> equations;
+public class AlgebraicSystem<V extends AlgebraicVariable<V, F, E>, F extends AlgebraicFunction<V, F, E>, E extends AlgebraicExpression<V, F, E>> {
+    private final List<AlgebraicEquation<V, F, E>> equations;
 
-    public AlgebraicSystem(List<AlgebraicEquation> equations) {
+    public AlgebraicSystem(List<AlgebraicEquation<V, F, E>> equations) {
         this.equations = new ArrayList<>(equations);
     }
 
     public AlgebraicSystem trySolve() {
-        AlgebraicSystem solution = new AlgebraicSystem(equations);
+        AlgebraicSystem<V, F, E> solution = new AlgebraicSystem<>(equations);
         //noinspection StatementWithEmptyBody
         while (!solution.isSolved() && !solution.isInconsistent()) {
             solution.tryRuleA();
@@ -26,26 +26,26 @@ public class AlgebraicSystem {
         return solution;
     }
 
-    public List<AlgebraicEquation> getEquations() {
+    public List<AlgebraicEquation<V, F, E>> getEquations() {
         return Collections.unmodifiableList(equations);
     }
 
     public boolean isSolved() {
-        Set<AlgebraicVariable> variables = new HashSet<>();
-        for (AlgebraicEquation eq : equations) {
-            if (!eq.getLeft().isVariable() || !variables.add((AlgebraicVariable) eq.getLeft())) {
+        Set<AlgebraicVariable<V, F, E>> variables = new HashSet<>();
+        for (AlgebraicEquation<V, F, E> eq : equations) {
+            if (!eq.getLeft().isVariable() || !variables.add(eq.getLeft().asVariable())) {
                 return false;
             }
         }
-        for (AlgebraicEquation eq : equations) {
-            if (eq.getRight().accept(new AlgebraicExpressionVisitor<Boolean>() {
+        for (AlgebraicEquation<V, F, E> eq : equations) {
+            if (eq.getRight().accept(new AlgebraicExpressionVisitor<Boolean, V, F, E>() {
                 @Override
-                public Boolean visit(AlgebraicVariable variable) {
+                public Boolean visit(V variable) {
                     return variables.contains(variable);
                 }
 
                 @Override
-                public Boolean visit(AlgebraicFunction function) {
+                public Boolean visit(F function) {
                     return function.getArguments().stream().anyMatch(e -> e.accept(this));
                 }
             })) {
@@ -56,25 +56,25 @@ public class AlgebraicSystem {
     }
 
     public boolean isInconsistent() {
-        for (AlgebraicEquation eq : equations) {
+        for (AlgebraicEquation<V, F, E> eq : equations) {
             if (eq.getLeft().isFunction() && eq.getRight().isFunction()) {
-                AlgebraicFunction left = (AlgebraicFunction) eq.getLeft();
-                AlgebraicFunction right = (AlgebraicFunction) eq.getRight();
-                if (!left.getName().equals(right.getName())) {
+                F left = eq.getLeft().asFunction();
+                F right = eq.getRight().asFunction();
+                if (!left.isEqualId(right)) {
                     return true;
                 }
             }
             if (eq.getLeft().isVariable() && eq.getRight().isFunction()) {
-                AlgebraicVariable left = (AlgebraicVariable) eq.getLeft();
-                AlgebraicFunction right = (AlgebraicFunction) eq.getRight();
-                if (right.accept(new AlgebraicExpressionVisitor<Boolean>() {
+                V left = eq.getLeft().asVariable();
+                F right = eq.getRight().asFunction();
+                if (right.accept(new AlgebraicExpressionVisitor<Boolean, V, F, E>() {
                     @Override
-                    public Boolean visit(AlgebraicVariable variable) {
+                    public Boolean visit(V variable) {
                         return variable.equals(left);
                     }
 
                     @Override
-                    public Boolean visit(AlgebraicFunction function) {
+                    public Boolean visit(F function) {
                         return function.getArguments().stream().anyMatch(x -> x.accept(this));
                     }
                 })) return true;
@@ -105,13 +105,13 @@ public class AlgebraicSystem {
     private boolean tryRuleA() {
         boolean result = false;
         for (int i = 0, len = equations.size(); i < len; ++i) {
-            AlgebraicEquation a = equations.get(i);
+            AlgebraicEquation<V, F, E> a = equations.get(i);
             if (a.getLeft().isFunction() || a.getRight().isVariable()) continue;
-            for (ListIterator<AlgebraicEquation> j = equations.listIterator(); j.hasNext(); ) {
-                AlgebraicEquation b = j.next();
+            for (ListIterator<AlgebraicEquation<V, F, E>> j = equations.listIterator(); j.hasNext(); ) {
+                AlgebraicEquation<V, F, E> b = j.next();
                 if (a == b || !a.getLeft().equals(b.getLeft())) continue;
                 j.remove();
-                j.add(new AlgebraicEquation(a.getRight(), b.getRight()));
+                j.add(new AlgebraicEquation<>(a.getRight(), b.getRight()));
                 result = true;
             }
         }
@@ -120,8 +120,8 @@ public class AlgebraicSystem {
 
     private boolean tryRuleB() {
         boolean result = false;
-        for (ListIterator<AlgebraicEquation> i = equations.listIterator(); i.hasNext(); ) {
-            AlgebraicEquation eq = i.next();
+        for (ListIterator<AlgebraicEquation<V, F, E>> i = equations.listIterator(); i.hasNext(); ) {
+            AlgebraicEquation<V, F, E> eq = i.next();
             if (eq.getLeft().isFunction() && eq.getRight().isVariable()) {
                 i.remove();
                 i.add(eq.swap());
@@ -133,15 +133,15 @@ public class AlgebraicSystem {
 
     private boolean tryRuleC() {
         boolean result = false;
-        for (ListIterator<AlgebraicEquation> i = equations.listIterator(); i.hasNext(); ) {
-            AlgebraicEquation eq = i.next();
+        for (ListIterator<AlgebraicEquation<V, F, E>> i = equations.listIterator(); i.hasNext(); ) {
+            AlgebraicEquation<V, F, E> eq = i.next();
             if (eq.getLeft().isFunction() && eq.getRight().isFunction()) {
-                AlgebraicFunction left = (AlgebraicFunction) eq.getLeft();
-                AlgebraicFunction right = (AlgebraicFunction) eq.getRight();
-                if (left.getName().equals(right.getName()) && left.getArguments().size() == right.getArguments().size()) {
+                F left = eq.getLeft().asFunction();
+                F right = eq.getRight().asFunction();
+                if (left.isEqualId(right) && left.getArguments().size() == right.getArguments().size()) {
                     i.remove();
                     for (int j = 0, len = left.getArguments().size(); j < len; ++j) {
-                        i.add(new AlgebraicEquation(left.getArguments().get(j), right.getArguments().get(j)));
+                        i.add(new AlgebraicEquation<>(left.getArguments().get(j), right.getArguments().get(j)));
                     }
                     result = true;
                 }
@@ -153,13 +153,13 @@ public class AlgebraicSystem {
     private boolean tryRuleD() {
         boolean result = false;
         for (int i = 0, len = equations.size(); i < len; ++i) {
-            AlgebraicEquation a = equations.get(i);
+            AlgebraicEquation<V, F, E> a = equations.get(i);
             if (a.getLeft().isFunction()) continue;
-            String var = ((AlgebraicVariable) a.getLeft()).getName();
-            for (ListIterator<AlgebraicEquation> j = equations.listIterator(); j.hasNext(); ) {
-                AlgebraicEquation b = j.next();
+            V var = a.getLeft().asVariable();
+            for (ListIterator<AlgebraicEquation<V, F, E>> j = equations.listIterator(); j.hasNext(); ) {
+                AlgebraicEquation<V, F, E> b = j.next();
                 if (a == b) continue;
-                AlgebraicEquation newEquation = new AlgebraicEquation(
+                AlgebraicEquation<V, F, E> newEquation = new AlgebraicEquation<>(
                         b.getLeft().substitute(var, a.getRight()),
                         b.getRight().substitute(var, a.getRight())
                 );
@@ -175,8 +175,8 @@ public class AlgebraicSystem {
 
     private boolean tryRuleE() {
         boolean result = false;
-        for (ListIterator<AlgebraicEquation> i = equations.listIterator(); i.hasNext(); ) {
-            AlgebraicEquation eq = i.next();
+        for (ListIterator<AlgebraicEquation<V, F, E>> i = equations.listIterator(); i.hasNext(); ) {
+            AlgebraicEquation<V, F, E> eq = i.next();
             if (eq.getLeft().equals(eq.getRight())) {
                 i.remove();
                 result = true;

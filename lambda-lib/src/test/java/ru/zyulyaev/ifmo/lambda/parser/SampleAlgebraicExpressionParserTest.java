@@ -2,28 +2,28 @@ package ru.zyulyaev.ifmo.lambda.parser;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ru.zyulyaev.ifmo.lambda.algebra.AlgebraicExpression;
-import ru.zyulyaev.ifmo.lambda.algebra.AlgebraicFunction;
-import ru.zyulyaev.ifmo.lambda.algebra.AlgebraicVariable;
+import ru.zyulyaev.ifmo.lambda.algebra.sample.SampleAlgebraicExpression;
+import ru.zyulyaev.ifmo.lambda.algebra.sample.SampleAlgebraicFunction;
+import ru.zyulyaev.ifmo.lambda.algebra.sample.SampleAlgebraicVariable;
 
 import java.util.Arrays;
 
 /**
  * Created by nikita on 22.11.14.
  */
-public class AlgebraicExpressionParserTest {
-    private final AlgebraicExpressionParser parser = new AlgebraicExpressionParser();
+public class SampleAlgebraicExpressionParserTest {
+    private final SampleAlgebraicExpressionParser parser = new SampleAlgebraicExpressionParser();
 
-    private void test(String expression, AlgebraicExpression valid) throws ExpressionParserException {
+    private void test(String expression, SampleAlgebraicExpression valid) throws ExpressionParserException {
         Assert.assertEquals(valid, parser.parse(expression));
     }
 
-    private AlgebraicExpression fun(String name, AlgebraicExpression... args) {
-        return new AlgebraicFunction(name, Arrays.asList(args));
+    private SampleAlgebraicFunction fun(String name, SampleAlgebraicExpression... args) {
+        return new SampleAlgebraicFunction(name, Arrays.asList(args));
     }
 
-    private AlgebraicExpression var(String var) {
-        return new AlgebraicVariable(var);
+    private SampleAlgebraicVariable var(String var) {
+        return new SampleAlgebraicVariable(var);
     }
 
     @Test

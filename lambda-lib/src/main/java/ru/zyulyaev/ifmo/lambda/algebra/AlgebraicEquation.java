@@ -3,24 +3,24 @@ package ru.zyulyaev.ifmo.lambda.algebra;
 /**
  * Created by nikita on 22.11.14.
  */
-public class AlgebraicEquation {
-    private final AlgebraicExpression left;
-    private final AlgebraicExpression right;
+public class AlgebraicEquation<V extends AlgebraicVariable<V, F, E>, F extends AlgebraicFunction<V, F, E>, E extends AlgebraicExpression<V, F, E>> {
+    private final E left;
+    private final E right;
 
-    public AlgebraicEquation(AlgebraicExpression left, AlgebraicExpression right) {
+    public AlgebraicEquation(E left, E right) {
         this.left = left;
         this.right = right;
     }
 
-    public AlgebraicEquation swap() {
-        return new AlgebraicEquation(right, left);
+    public AlgebraicEquation<V, F, E> swap() {
+        return new AlgebraicEquation<>(right, left);
     }
 
-    public AlgebraicExpression getLeft() {
+    public E getLeft() {
         return left;
     }
 
-    public AlgebraicExpression getRight() {
+    public E getRight() {
         return right;
     }
 

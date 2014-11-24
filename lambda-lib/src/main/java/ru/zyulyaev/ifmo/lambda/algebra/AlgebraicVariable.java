@@ -1,55 +1,17 @@
 package ru.zyulyaev.ifmo.lambda.algebra;
 
 /**
- * Created by nikita on 22.11.14.
+ * @author zyulyaev
+ * @date 24.11.14 16:02
  */
-public class AlgebraicVariable implements AlgebraicExpression {
-    private final String name;
-
-    public AlgebraicVariable(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
+public interface AlgebraicVariable<V extends AlgebraicVariable<V, F, E>, F extends AlgebraicFunction<V, F, E>, E extends AlgebraicExpression<V, F, E>> extends AlgebraicExpression<V, F, E> {
     @Override
-    public String toString() {
-        return name;
-    }
-
-    @Override
-    public AlgebraicExpression substitute(String variable, AlgebraicExpression expression) {
-        return name.equals(variable) ? expression : this;
-    }
-
-    @Override
-    public <T> T accept(AlgebraicExpressionVisitor<T> visitor) {
-        return visitor.visit(this);
-    }
-
-    @Override
-    public boolean isVariable() {
+    default boolean isVariable() {
         return true;
     }
 
     @Override
-    public boolean isFunction() {
+    default boolean isFunction() {
         return false;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        AlgebraicVariable that = (AlgebraicVariable) o;
-        return name.equals(that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode();
     }
 }

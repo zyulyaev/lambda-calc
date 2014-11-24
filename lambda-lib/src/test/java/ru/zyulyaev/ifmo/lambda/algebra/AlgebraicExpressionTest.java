@@ -2,21 +2,23 @@ package ru.zyulyaev.ifmo.lambda.algebra;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ru.zyulyaev.ifmo.lambda.parser.AlgebraicExpressionParser;
+import ru.zyulyaev.ifmo.lambda.algebra.sample.SampleAlgebraicExpression;
+import ru.zyulyaev.ifmo.lambda.algebra.sample.SampleAlgebraicVariable;
+import ru.zyulyaev.ifmo.lambda.parser.SampleAlgebraicExpressionParser;
 import ru.zyulyaev.ifmo.lambda.parser.ExpressionParserException;
 
 /**
  * Created by nikita on 22.11.14.
  */
 public class AlgebraicExpressionTest {
-    private final AlgebraicExpressionParser parser = new AlgebraicExpressionParser();
+    private final SampleAlgebraicExpressionParser parser = new SampleAlgebraicExpressionParser();
 
-    private AlgebraicExpression parse(String expr) throws ExpressionParserException {
+    private SampleAlgebraicExpression parse(String expr) throws ExpressionParserException {
         return parser.parse(expr);
     }
 
     private void testSubstitute(String before, String var, String subs, String after) throws ExpressionParserException {
-        Assert.assertEquals(parse(after), parse(before).substitute(var, parse(subs)));
+        Assert.assertEquals(parse(after), parse(before).substitute(new SampleAlgebraicVariable(var), parse(subs)));
     }
 
     @Test
