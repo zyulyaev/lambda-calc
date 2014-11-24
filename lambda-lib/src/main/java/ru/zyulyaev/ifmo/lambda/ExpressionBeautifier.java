@@ -9,7 +9,7 @@ import java.util.function.Supplier;
  */
 public class ExpressionBeautifier implements ExpressionVisitor<Expression> {
     private final ExpressionBeautifier parent;
-    private final Supplier<Variable> variableSupplier;
+    private final Supplier<String> variableSupplier;
     private final Map<String, Variable> variables = new HashMap<>();
 
     private ExpressionBeautifier(ExpressionBeautifier parent, String key, Variable value) {
@@ -20,12 +20,12 @@ public class ExpressionBeautifier implements ExpressionVisitor<Expression> {
 
     public ExpressionBeautifier() {
         this.parent = null;
-        this.variableSupplier = new VariableSupplier();
+        this.variableSupplier = new VariableNameSupplier();
     }
 
     @Override
     public Expression visit(Abstraction abstraction) {
-        Variable variable = variableSupplier.get();
+        Variable variable = new Variable(variableSupplier.get());
         ExpressionBeautifier child = new ExpressionBeautifier(this, abstraction.getVariable(), variable);
         return new Abstraction(variable.getName(), abstraction.getExpression().accept(child));
     }
@@ -38,7 +38,7 @@ public class ExpressionBeautifier implements ExpressionVisitor<Expression> {
     private Variable resolveVariable(String name) {
         if (variables.containsKey(name)) return variables.get(name);
         if (parent != null) return parent.resolveVariable(name);
-        return variables.computeIfAbsent(name, n -> variableSupplier.get());
+        return variables.computeIfAbsent(name, n -> new Variable(variableSupplier.get()));
     }
 
     @Override

@@ -5,23 +5,23 @@ import java.util.function.Supplier;
 /**
  * Created by nikita on 24.11.14.
  */
-public class VariableSupplier implements Supplier<Variable> {
+public class VariableNameSupplier implements Supplier<String> {
     private final StringBuilder next;
 
-    public VariableSupplier(String first) {
+    public VariableNameSupplier(String first) {
         if (!first.matches("[a-z](0|[1-9][0-9]*)?")) {
             throw new IllegalArgumentException("Illegal first variable name " + first);
         }
         this.next = new StringBuilder(first);
     }
 
-    public VariableSupplier() {
+    public VariableNameSupplier() {
         this("a");
     }
 
     @Override
-    public Variable get() {
-        Variable result = new Variable(next.toString());
+    public String get() {
+        String result = next.toString();
         prepareNext();
         return result;
     }
@@ -46,5 +46,10 @@ public class VariableSupplier implements Supplier<Variable> {
         } else {
             next.setCharAt(0, (char) (next.charAt(0) + 1));
         }
+    }
+
+    @Override
+    public String toString() {
+        return "next=" + next;
     }
 }
