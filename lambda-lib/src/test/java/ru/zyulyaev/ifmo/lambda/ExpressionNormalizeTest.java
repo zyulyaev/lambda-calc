@@ -19,26 +19,21 @@ public class ExpressionNormalizeTest extends BaseExpressionTest {
 
     @Test
     public void testNormalize2() throws ExpressionParserException {
-        testNormalize("(\\a.a a) (\\a.a a)", "(\\a.a a) (\\a.a a)");
-    }
-
-    @Test
-    public void testNormalize3() throws ExpressionParserException {
         testNormalize("(\\a.a) (\\c.d) q", "d");
     }
 
     @Test
-    public void testNormalize4() throws ExpressionParserException {
+    public void testNormalize3() throws ExpressionParserException {
         testNormalize("\\a.\\b.a b c (\\d.e \\f.g) h", "\\a.\\b.a b c (\\d.e \\f.g) h");
     }
 
     @Test
-    public void testNormalize5() throws ExpressionParserException {
+    public void testNormalize4() throws ExpressionParserException {
         testNormalize("(\\a.\\b.a) x ((\\x.x x) \\x.x x)", "x");
     }
 
     @Test
-    public void testNormalize6() throws ExpressionParserException {
+    public void testNormalize5() throws ExpressionParserException {
         testNormalize("(\\x.x y) \\a.a", "y");
     }
 }
