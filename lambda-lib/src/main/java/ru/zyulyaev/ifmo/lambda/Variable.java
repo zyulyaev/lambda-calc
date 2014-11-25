@@ -8,11 +8,11 @@ import java.util.Set;
  */
 public class Variable implements Expression {
     private final String name;
-    private final Set<String> freeVariables;
+    private final Set<Variable> variables;
 
     public Variable(String name) {
         this.name = name;
-        this.freeVariables = Collections.singleton(name);
+        this.variables = Collections.singleton(this);
     }
 
     public String getName() {
@@ -20,13 +20,18 @@ public class Variable implements Expression {
     }
 
     @Override
-    public Set<String> getFreeVariables() {
-        return freeVariables;
+    public Set<Variable> getFreeVariables() {
+        return variables;
     }
 
     @Override
-    public Expression substitute(String variable, Expression expression) throws FreshnessConditionException {
-        return name.equals(variable) ? expression : this;
+    public Set<Variable> getVariables() {
+        return variables;
+    }
+
+    @Override
+    public Expression substitute(Variable variable, Expression expression) throws FreshnessConditionException {
+        return equals(variable) ? expression : this;
     }
 
     @Override

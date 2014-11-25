@@ -10,7 +10,8 @@ import java.util.Set;
 public class Application implements Expression {
     private final Expression left;
     private final Expression right;
-    private Set<String> freeVariables;
+    private Set<Variable> freeVariables;
+    private Set<Variable> variables;
 
     public Application(Expression left, Expression right) {
         this.left = left;
@@ -26,9 +27,9 @@ public class Application implements Expression {
     }
 
     @Override
-    public Set<String> getFreeVariables() {
+    public Set<Variable> getFreeVariables() {
         if (freeVariables == null) {
-            Set<String> vars = new HashSet<>(left.getFreeVariables());
+            Set<Variable> vars = new HashSet<>(left.getFreeVariables());
             vars.addAll(right.getFreeVariables());
             this.freeVariables = Collections.unmodifiableSet(vars);
         }
@@ -36,7 +37,17 @@ public class Application implements Expression {
     }
 
     @Override
-    public Expression substitute(String variable, Expression expression) throws FreshnessConditionException {
+    public Set<Variable> getVariables() {
+        if (variables == null) {
+            Set<Variable> vars = new HashSet<>(left.getVariables());
+            vars.addAll(right.getVariables());
+            this.variables = vars;
+        }
+        return variables;
+    }
+
+    @Override
+    public Expression substitute(Variable variable, Expression expression) throws FreshnessConditionException {
         if (!this.getFreeVariables().contains(variable)) {
             return this;
         }

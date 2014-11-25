@@ -4,9 +4,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import ru.zyulyaev.ifmo.lambda.parser.ExpressionParserException;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author zyulyaev
@@ -32,9 +31,7 @@ public class ExpressionTest extends BaseExpressionTest {
     }
 
     private void testGetFreeVariables(String expression, String... variables) throws ExpressionParserException {
-        Set<String> set = new HashSet<>();
-        Collections.addAll(set, variables);
-        Assert.assertEquals(set, parse(expression).getFreeVariables());
+        Assert.assertEquals(Stream.of(variables).map(Variable::new).collect(Collectors.toSet()), parse(expression).getFreeVariables());
     }
 
     @Test
@@ -53,7 +50,7 @@ public class ExpressionTest extends BaseExpressionTest {
     }
 
     private void testSubstitute(String expr, String var, String subs, String result) throws ExpressionParserException, FreshnessConditionException {
-        Assert.assertEquals(parse(result), parse(expr).substitute(var, parse(subs)));
+        Assert.assertEquals(parse(result), parse(expr).substitute(new Variable(var), parse(subs)));
     }
 
     @Test
@@ -72,7 +69,7 @@ public class ExpressionTest extends BaseExpressionTest {
     }
 
     private void testSubstituteFailed(String expr, String var, String subs) throws ExpressionParserException, FreshnessConditionException {
-        parse(expr).substitute(var, parse(subs));
+        parse(expr).substitute(new Variable(var), parse(subs));
     }
 
     @Test(expected = FreshnessConditionException.class)

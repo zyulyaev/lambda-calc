@@ -50,7 +50,7 @@ public class ExpressionTypeRecognizerTest extends BaseExpressionTest {
 
     @Test
     public void testRecognizeSimple2() throws ExpressionParserException {
-        testRecognizeSimple("x y", ctx(var("c"), map("a", app(var("b"), var("c")))));
+        testRecognizeSimple("x y", ctx(var("a"), map("x", app(var("y"), var("a")))));
     }
 
     @Test

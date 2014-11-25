@@ -8,16 +8,17 @@ import java.util.Set;
  * Created by nikita on 20.11.14.
  */
 public class Abstraction implements Expression {
-    private final String variable;
+    private final Variable variable;
     private final Expression expression;
-    private Set<String> freeVariables;
+    private Set<Variable> freeVariables;
+    private Set<Variable> variables;
 
-    public Abstraction(String variable, Expression expression) {
+    public Abstraction(Variable variable, Expression expression) {
         this.variable = variable;
         this.expression = expression;
     }
 
-    public String getVariable() {
+    public Variable getVariable() {
         return variable;
     }
 
@@ -26,9 +27,9 @@ public class Abstraction implements Expression {
     }
 
     @Override
-    public Set<String> getFreeVariables() {
+    public Set<Variable> getFreeVariables() {
         if (freeVariables == null) {
-            Set<String> vars = new HashSet<>(expression.getFreeVariables());
+            Set<Variable> vars = new HashSet<>(expression.getFreeVariables());
             vars.remove(variable);
             this.freeVariables = Collections.unmodifiableSet(vars);
         }
@@ -36,7 +37,17 @@ public class Abstraction implements Expression {
     }
 
     @Override
-    public Expression substitute(String variable, Expression expression) throws FreshnessConditionException {
+    public Set<Variable> getVariables() {
+        if (variables == null) {
+            Set<Variable> vars = new HashSet<>(expression.getVariables());
+            vars.add(variable);
+            this.variables = vars;
+        }
+        return variables;
+    }
+
+    @Override
+    public Expression substitute(Variable variable, Expression expression) throws FreshnessConditionException {
         if (!this.getFreeVariables().contains(variable)) {
             return this;
         }
@@ -62,7 +73,7 @@ public class Abstraction implements Expression {
         if (o == null || getClass() != o.getClass()) return false;
 
         Abstraction that = (Abstraction) o;
-        return expression.equals(that.expression) && variable.equals(that.variable);
+        return variable.equals(that.variable) && expression.equals(that.expression);
     }
 
     @Override

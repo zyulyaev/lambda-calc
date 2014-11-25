@@ -7,9 +7,14 @@ import java.util.Set;
  */
 public interface Expression {
     /**
-     * @return set of variable names, which have free occurrences in this expression
+     * @return set of variables, which have free occurrences in this expression
      */
-    Set<String> getFreeVariables();
+    Set<Variable> getFreeVariables();
+
+    /**
+     * @return set of all variables occurring in this expression
+     */
+    Set<Variable> getVariables();
 
     /**
      * Substitutes every free occurrence of given variable with given expression
@@ -18,7 +23,7 @@ public interface Expression {
      * @return expression with given variable substituted with given expression
      * @throws FreshnessConditionException if substitution is impossible, i.e. some free variable in given expression becomes bound after substitution
      */
-    Expression substitute(String variable, Expression expression) throws FreshnessConditionException;
+    Expression substitute(Variable variable, Expression expression) throws FreshnessConditionException;
 
     <T> T accept(ExpressionVisitor<T> visitor);
 

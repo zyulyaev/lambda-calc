@@ -3,30 +3,14 @@ package ru.zyulyaev.ifmo.lambda;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.function.Supplier;
 
 /**
  * Created by nikita on 24.11.14.
  */
 public class VariableNameSupplierTest {
-    @Test
-    public void testConstruct() {
-        new VariableNameSupplier("q");
-        new VariableNameSupplier("z0");
-        new VariableNameSupplier("a1");
-        new VariableNameSupplier("z192");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructFailed1() {
-        new VariableNameSupplier("z01");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testConstructFailed2() {
-        new VariableNameSupplier("xy");
-    }
-
     @Test
     public void testGetSequence() {
         Supplier<String> supplier = new VariableNameSupplier();
@@ -42,11 +26,13 @@ public class VariableNameSupplierTest {
     }
 
     @Test
-    public void testGetUncommonStart() {
-        Supplier<String> supplier = new VariableNameSupplier("x101");
-        Assert.assertEquals("x101", supplier.get());
-        Assert.assertEquals("y101", supplier.get());
-        Assert.assertEquals("z101", supplier.get());
-        Assert.assertEquals("a102", supplier.get());
+    public void testGetAvoiding() {
+        Supplier<String> supplier = new VariableNameSupplier(new HashSet<>(Arrays.asList(
+                "a", "b", "d", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
+        )));
+        Assert.assertEquals("c", supplier.get());
+        Assert.assertEquals("e", supplier.get());
+        Assert.assertEquals("f", supplier.get());
+        Assert.assertEquals("a0", supplier.get());
     }
 }

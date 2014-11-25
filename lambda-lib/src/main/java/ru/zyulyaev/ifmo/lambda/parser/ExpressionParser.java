@@ -30,7 +30,7 @@ public class ExpressionParser extends BaseParser<Expression> {
     private Expression parseAbstraction(Tokenizer tokenizer) throws IOException, ExpressionParserException {
         String var = expect(tokenizer, TokenType.LITERAL);
         expect(tokenizer, TokenType.DOT);
-        return new Abstraction(var, parse(tokenizer));
+        return new Abstraction(new Variable(var), parse(tokenizer));
     }
 
     @Override

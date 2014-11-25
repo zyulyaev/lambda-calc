@@ -17,15 +17,15 @@ public class ExpressionParserTest {
         Assert.assertEquals(valid, parser.parse(expression));
     }
 
-    private Expression abs(String var, Expression expr) {
-        return new Abstraction(var, expr);
+    private Abstraction abs(String var, Expression expr) {
+        return new Abstraction(var(var), expr);
     }
 
-    private Expression app(Expression left, Expression right) {
+    private Application app(Expression left, Expression right) {
         return new Application(left, right);
     }
 
-    private Expression var(String var) {
+    private Variable var(String var) {
         return new Variable(var);
     }
 

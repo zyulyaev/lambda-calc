@@ -1,7 +1,5 @@
 package ru.zyulyaev.ifmo.lambda;
 
-import java.util.Optional;
-
 /**
  * Created by nikita on 24.11.14.
  */
@@ -12,7 +10,7 @@ public enum StandardExpressionVisitor implements ExpressionVisitor<Expression> {
     SKI_CONVERTER {
         @Override
         public Expression visit(Abstraction abstraction) {
-            String variable = abstraction.getVariable();
+            Variable variable = abstraction.getVariable();
             Expression expression = abstraction.getExpression();
             if (expression.getFreeVariables().contains(variable)) {
                 return expression.accept(new AbstractionSkiVisitor(variable));
@@ -32,9 +30,9 @@ public enum StandardExpressionVisitor implements ExpressionVisitor<Expression> {
         }
 
         class AbstractionSkiVisitor implements ExpressionVisitor<Expression> {
-            private final String variable;
+            private final Variable variable;
 
-            private AbstractionSkiVisitor(String variable) {
+            private AbstractionSkiVisitor(Variable variable) {
                 this.variable = variable;
             }
 
@@ -66,7 +64,7 @@ public enum StandardExpressionVisitor implements ExpressionVisitor<Expression> {
     NORMALIZER {
         @Override
         public Expression visit(Abstraction abstraction) {
-            String variable = abstraction.getVariable();
+            Variable variable = abstraction.getVariable();
             Expression expression = abstraction.getExpression();
 
             Expression normalized = expression.accept(NORMALIZER);
@@ -75,10 +73,20 @@ public enum StandardExpressionVisitor implements ExpressionVisitor<Expression> {
 
         @Override
         public Expression visit(Application application) {
-            final Expression leftNormalized = application.getLeft().accept(NORMALIZER);
-            final Expression rightNormalized = application.getRight().accept(NORMALIZER);
-            return leftNormalized.accept(new ApplicationNormalizeVisitor(rightNormalized))
-                    .orElseGet(() -> new Application(leftNormalized, rightNormalized));
+            Expression redex = application.getLeft().accept(new ApplicationNormalizeVisitor(application.getRight()));
+            if (redex == null) {
+                Expression left = application.getLeft().accept(NORMALIZER);
+                Expression right = application.getRight();
+                if (left == application.getLeft()) {
+                    right = right.accept(NORMALIZER);
+                }
+                if (left == application.getLeft() && right == application.getRight()) {
+                    return application;
+                }
+                return new Application(left, right).accept(NORMALIZER);
+            } else {
+                return redex.accept(NORMALIZER);
+            }
         }
 
         @Override
@@ -86,30 +94,30 @@ public enum StandardExpressionVisitor implements ExpressionVisitor<Expression> {
             return variable;
         }
 
-        class ApplicationNormalizeVisitor implements ExpressionVisitor<Optional<Expression>> {
-            private final Expression rightNormalized;
+        class ApplicationNormalizeVisitor implements ExpressionVisitor<Expression> {
+            private final Expression rightExpression;
 
-            public ApplicationNormalizeVisitor(Expression rightNormalized) {
-                this.rightNormalized = rightNormalized;
+            ApplicationNormalizeVisitor(Expression rightExpression) {
+                this.rightExpression = rightExpression;
             }
 
             @Override
-            public Optional<Expression> visit(Abstraction abstraction) {
+            public Expression visit(Abstraction abstraction) {
                 try {
-                    return Optional.of(abstraction.getExpression().substitute(abstraction.getVariable(), rightNormalized));
+                    return abstraction.getExpression().substitute(abstraction.getVariable(), rightExpression);
                 } catch (FreshnessConditionException e) {
-                    return Optional.empty();
+                    return null;
                 }
             }
 
             @Override
-            public Optional<Expression> visit(Application application) {
-                return Optional.empty();
+            public Expression visit(Application application) {
+                return null;
             }
 
             @Override
-            public Optional<Expression> visit(Variable variable) {
-                return Optional.empty();
+            public Expression visit(Variable variable) {
+                return null;
             }
         }
     }

@@ -8,13 +8,15 @@ import ru.zyulyaev.ifmo.lambda.parser.ExpressionParserException;
  * Created by nikita on 24.11.14.
  */
 public class ExpressionBeautifyTest extends BaseExpressionTest {
+    private final ExpressionBeautifier beautifier = new ExpressionBeautifier();
+
     private void testBeautify(String before, String after) throws ExpressionParserException {
-        Assert.assertEquals(parse(after), parse(before).accept(new ExpressionBeautifier()));
+        Assert.assertEquals(parse(after), beautifier.beautify(parse(before)));
     }
 
     @Test
     public void testBeautify1() throws ExpressionParserException {
-        testBeautify("x", "a");
+        testBeautify("x", "x");
     }
 
     @Test
@@ -24,36 +26,36 @@ public class ExpressionBeautifyTest extends BaseExpressionTest {
 
     @Test
     public void testBeautify3() throws ExpressionParserException {
-        testBeautify("\\x.y", "\\a.b");
+        testBeautify("\\x.y", "\\a.y");
     }
 
     @Test
     public void testBeautify4() throws ExpressionParserException {
-        testBeautify("x y", "a b");
+        testBeautify("x y", "x y");
     }
 
     @Test
     public void testBeautify5() throws ExpressionParserException {
-        testBeautify("x x", "a a");
+        testBeautify("x x", "x x");
     }
 
     @Test
     public void testBeautify6() throws ExpressionParserException {
-        testBeautify("x x \\y.y x", "a a \\b.b a");
+        testBeautify("x x \\y.y x", "x x \\a.a x");
     }
 
     @Test
     public void testBeautify7() throws ExpressionParserException {
-        testBeautify("(\\y.y x) x x", "(\\a.a b) b b");
+        testBeautify("(\\y.y x) x x", "(\\a.a x) x x");
     }
 
     @Test
     public void testBeautify8() throws ExpressionParserException {
-        testBeautify("\\x.x (\\x.x \\x.x y) \\y.a y", "\\a.a (\\b.b \\c.c d) \\e.f e");
+        testBeautify("\\x.x (\\x.x \\x.x y) \\y.a y", "\\b.b (\\c.c \\d.d y) \\e.a e");
     }
 
     @Test
     public void testBeautify9() throws ExpressionParserException {
-        testBeautify("(\\x.\\y.y x) x y", "(\\a.\\b.b a) c d");
+        testBeautify("(\\x.\\y.y x) x y", "(\\a.\\b.b a) x y");
     }
 }
