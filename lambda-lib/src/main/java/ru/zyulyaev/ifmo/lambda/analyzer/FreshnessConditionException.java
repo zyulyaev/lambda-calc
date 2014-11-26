@@ -1,4 +1,4 @@
-package ru.zyulyaev.ifmo.lambda;
+package ru.zyulyaev.ifmo.lambda.analyzer;
 
 /**
  * Created by nikita on 20.11.14.

@@ -1,14 +1,15 @@
-package ru.zyulyaev.ifmo.lambda;
+package ru.zyulyaev.ifmo.lambda.analyzer;
 
 import org.junit.Assert;
 import org.junit.Test;
+import ru.zyulyaev.ifmo.lambda.BaseExpressionTest;
 import ru.zyulyaev.ifmo.lambda.parser.ExpressionParserException;
 
 /**
  * Created by nikita on 24.11.14.
  */
 public class ExpressionBeautifyTest extends BaseExpressionTest {
-    private final ExpressionBeautifier beautifier = new ExpressionBeautifier();
+    private final ExpressionBeautifier beautifier = new ExpressionBeautifier(new FreeVariablesFinder());
 
     private void testBeautify(String before, String after) throws ExpressionParserException {
         Assert.assertEquals(parse(after), beautifier.beautify(parse(before)));

@@ -3,6 +3,9 @@ package ru.zyulyaev.ifmo.lambda.types;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.zyulyaev.ifmo.lambda.BaseExpressionTest;
+import ru.zyulyaev.ifmo.lambda.analyzer.ExpressionBeautifier;
+import ru.zyulyaev.ifmo.lambda.analyzer.FreeVariablesFinder;
+import ru.zyulyaev.ifmo.lambda.analyzer.VariablesFinder;
 import ru.zyulyaev.ifmo.lambda.parser.ExpressionParserException;
 
 import java.util.Arrays;
@@ -13,7 +16,7 @@ import java.util.Optional;
  * @date 24.11.14 18:54
  */
 public class ExpressionTypeRecognizerTest extends BaseExpressionTest {
-    private final ExpressionTypeRecognizer recognizer = new ExpressionTypeRecognizer();
+    private final ExpressionTypeRecognizer recognizer = new ExpressionTypeRecognizer(new ExpressionBeautifier(new FreeVariablesFinder()), new VariablesFinder());
 
     private Optional<LambdaTypeWithContext> recognize(String expr) throws ExpressionParserException {
         return recognizer.recognizeSimpleType(parse(expr));

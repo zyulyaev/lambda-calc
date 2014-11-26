@@ -3,6 +3,8 @@ package ru.zyulyaev.ifmo.lambda.types;
 import ru.zyulyaev.ifmo.lambda.*;
 import ru.zyulyaev.ifmo.lambda.algebra.AlgebraicEquation;
 import ru.zyulyaev.ifmo.lambda.algebra.AlgebraicSystem;
+import ru.zyulyaev.ifmo.lambda.analyzer.ExpressionBeautifier;
+import ru.zyulyaev.ifmo.lambda.analyzer.VariablesFinder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +18,17 @@ import java.util.stream.Collectors;
  * @date 24.11.14 18:36
  */
 public class ExpressionTypeRecognizer {
-    private final ExpressionBeautifier beautifier = new ExpressionBeautifier();
+    private final ExpressionBeautifier beautifier;
+    private final VariablesFinder finder;
+
+    public ExpressionTypeRecognizer(ExpressionBeautifier beautifier, VariablesFinder finder) {
+        this.beautifier = beautifier;
+        this.finder = finder;
+    }
 
     public Optional<LambdaTypeWithContext> recognizeSimpleType(Expression expression) {
         Expression beautiful = beautifier.beautify(expression);
-        Set<String> avoid = beautiful.getVariables().stream().map(Variable::getName).collect(Collectors.toSet());
+        Set<String> avoid = finder.findVariables(beautiful).stream().map(Variable::getName).collect(Collectors.toSet());
         DataCollector collector = new DataCollector(new VariableNameSupplier(avoid));
         LambdaType type = beautiful.accept(collector);
         AlgebraicSystem<LambdaTypeVariable, LambdaTypeApplication, LambdaType> system = new AlgebraicSystem<>(collector.equations).trySolve();

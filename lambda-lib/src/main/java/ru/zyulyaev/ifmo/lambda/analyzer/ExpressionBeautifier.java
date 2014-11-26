@@ -1,4 +1,6 @@
-package ru.zyulyaev.ifmo.lambda;
+package ru.zyulyaev.ifmo.lambda.analyzer;
+
+import ru.zyulyaev.ifmo.lambda.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,9 +11,25 @@ import java.util.stream.Collectors;
 /**
  * Builds equivalent lambda expression with different variable names, so as no bound variable occurs free and no bound variable is bound twice
  */
-public class ExpressionBeautifier {
+public class ExpressionBeautifier extends CachedExpressionAnalyzer<Expression> {
+    private final FreeVariablesFinder finder;
+
+    public ExpressionBeautifier(FreeVariablesFinder finder, int maxCacheSize) {
+        super(maxCacheSize);
+        this.finder = finder;
+    }
+
+    public ExpressionBeautifier(FreeVariablesFinder finder) {
+        this.finder = finder;
+    }
+
     public Expression beautify(Expression expression) {
-        Set<String> avoid = expression.getFreeVariables().stream().map(Variable::getName).collect(Collectors.toSet());
+        return getOrCompute(expression);
+    }
+
+    @Override
+    protected Expression compute(Expression expression) {
+        Set<String> avoid = finder.findFreeVariables(expression).stream().map(Variable::getName).collect(Collectors.toSet());
         return expression.accept(new BeautifyingVisitor(new VariableNameSupplier(avoid)));
     }
 

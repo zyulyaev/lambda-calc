@@ -4,9 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import ru.zyulyaev.ifmo.lambda.parser.ExpressionParserException;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 /**
  * @author zyulyaev
  */
@@ -28,57 +25,5 @@ public class ExpressionTest extends BaseExpressionTest {
     @Test
     public void testToString3() throws ExpressionParserException {
         testToString("\\a.\\b.a b \\c.c a b", "(\\a.(\\b.((a b) (\\c.((c a) b)))))");
-    }
-
-    private void testGetFreeVariables(String expression, String... variables) throws ExpressionParserException {
-        Assert.assertEquals(Stream.of(variables).map(Variable::new).collect(Collectors.toSet()), parse(expression).getFreeVariables());
-    }
-
-    @Test
-    public void testGetFreeVariables1() throws ExpressionParserException {
-        testGetFreeVariables("\\a.a b", "b");
-    }
-
-    @Test
-    public void testGetFreeVariables2() throws ExpressionParserException {
-        testGetFreeVariables("\\a.\\b.a b c (\\d.e \\f.g) h", "c", "e", "g", "h");
-    }
-
-    @Test
-    public void testGetFreeVariables3() throws ExpressionParserException {
-        testGetFreeVariables("\\a.\\b.a b \\c.c a b");
-    }
-
-    private void testSubstitute(String expr, String var, String subs, String result) throws ExpressionParserException, FreshnessConditionException {
-        Assert.assertEquals(parse(result), parse(expr).substitute(new Variable(var), parse(subs)));
-    }
-
-    @Test
-    public void testSubstitute1() throws ExpressionParserException, FreshnessConditionException {
-        testSubstitute("\\a.a b", "b", "c d", "\\a.a (c d)");
-    }
-
-    @Test
-    public void testSubstitute2() throws ExpressionParserException, FreshnessConditionException {
-        testSubstitute("\\a.\\b.a b c (\\d.c \\f.g) h", "c", "x y", "\\a.\\b.a b (x y) (\\d.(x y) \\f.g) h");
-    }
-
-    @Test
-    public void testSubstitute3() throws ExpressionParserException, FreshnessConditionException {
-        testSubstitute("\\a.\\b.a b \\c.c a b", "d", "x y", "\\a.\\b.a b \\c.c a b");
-    }
-
-    private void testSubstituteFailed(String expr, String var, String subs) throws ExpressionParserException, FreshnessConditionException {
-        parse(expr).substitute(new Variable(var), parse(subs));
-    }
-
-    @Test(expected = FreshnessConditionException.class)
-    public void testSubstituteFailed1() throws ExpressionParserException, FreshnessConditionException {
-        testSubstituteFailed("\\a.a b", "b", "c a");
-    }
-
-    @Test(expected = FreshnessConditionException.class)
-    public void testSubstituteFailed2() throws ExpressionParserException, FreshnessConditionException {
-        testSubstituteFailed("\\a.\\b.a b c (\\d.e \\f.g) h", "g", "\\x.t \\y.a t y");
     }
 }
