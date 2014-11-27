@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>lambda-lib</module>
+        <module>lambda-exec</module>
     </modules>
 
     <properties>
