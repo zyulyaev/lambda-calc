@@ -1,4 +1,6 @@
-package ru.zyulyaev.ifmo.lambda.parser;
+package ru.zyulyaev.ifmo.lambda.parser.tokenizer;
+
+import ru.zyulyaev.ifmo.lambda.parser.ExpressionParserException;
 
 /**
  * Created by nikita on 20.11.14.

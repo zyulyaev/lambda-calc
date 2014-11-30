@@ -1,18 +1,23 @@
-package ru.zyulyaev.ifmo.lambda.parser;
+package ru.zyulyaev.ifmo.lambda.parser.tokenizer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 
 /**
- * Created by nikita on 20.11.14.
+ * Created by nikita on 30.11.14.
  */
-class Tokenizer {
+public class BufferedReaderTokenizer implements Tokenizer<IOException> {
     private final BufferedReader reader;
     private int lastChar = Integer.MIN_VALUE;
     private Token lastToken;
 
-    Tokenizer(BufferedReader reader) {
+    public BufferedReaderTokenizer(BufferedReader reader) {
         this.reader = reader;
+    }
+
+    public static Tokenizer<RuntimeException> stringTokenizer(String s) {
+        return new BufferedReaderTokenizer(new BufferedReader(new StringReader(s))).suppressExceptions();
     }
 
     private int nextChar() throws IOException {
@@ -35,6 +40,7 @@ class Tokenizer {
     }
 
     private Token readToken() throws IOException, UnexpectedCharacterException {
+        if (lastToken == Token.EOF) return lastToken;
         int c = nextChar();
         switch (c) {
             case '\\': return Token.LAMBDA;
@@ -42,11 +48,15 @@ class Tokenizer {
             case ',': return Token.COMMA;
             case '(': return Token.OPEN;
             case ')': return Token.CLOSE;
+            case '=': return Token.EQUALS;
+            case '[': return Token.BRACKET_OPEN;
+            case ']': return Token.BRACKET_CLOSE;
+            case ':': return Token.COLON;
             case ' ':
             case '\r':
             case '\n':
             case '\t':
-                return Token.WHITESPACE;
+                return Token.whitespace(Character.toString((char) c));
             case -1:
                 return Token.EOF;
             default:
@@ -58,16 +68,18 @@ class Tokenizer {
                 while (peekChar() == '`') {
                     builder.append((char) nextChar());
                 }
-                return new Token(TokenType.LITERAL, builder.toString());
+                return Token.literal(builder.toString());
         }
     }
 
-    Token peek() throws IOException, UnexpectedCharacterException {
+    @Override
+    public Token peek() throws IOException, UnexpectedCharacterException {
         ensureFirstToken();
         return lastToken;
     }
 
-    Token next() throws IOException, UnexpectedCharacterException {
+    @Override
+    public Token next() throws IOException, UnexpectedCharacterException {
         ensureFirstToken();
         Token result = lastToken;
         lastToken = readToken();

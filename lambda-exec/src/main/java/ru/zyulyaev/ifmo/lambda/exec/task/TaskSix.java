@@ -9,6 +9,10 @@ import ru.zyulyaev.ifmo.lambda.algebra.sample.SampleAlgebraicFunction;
 import ru.zyulyaev.ifmo.lambda.algebra.sample.SampleAlgebraicVariable;
 import ru.zyulyaev.ifmo.lambda.parser.ExpressionParserException;
 import ru.zyulyaev.ifmo.lambda.parser.SampleAlgebraicExpressionParser;
+import ru.zyulyaev.ifmo.lambda.parser.tokenizer.BufferedReaderTokenizer;
+import ru.zyulyaev.ifmo.lambda.parser.tokenizer.Token;
+import ru.zyulyaev.ifmo.lambda.parser.tokenizer.TokenType;
+import ru.zyulyaev.ifmo.lambda.parser.tokenizer.Tokenizer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,9 +31,18 @@ public class TaskSix extends BaseTaskExecutor {
     @Override
     protected void execute(BufferedReader in, PrintWriter out) throws IOException, ExpressionParserException {
         List<AlgebraicEquation<SampleAlgebraicVariable, SampleAlgebraicFunction, SampleAlgebraicExpression>> eqs = new ArrayList<>();
-        for (String line = in.readLine(); line != null; line = in.readLine()) {
-            String[] s = line.split("=", 2);
-            eqs.add(new AlgebraicEquation<>(parser.parse(s[0]), parser.parse(s[1])));
+        Tokenizer<IOException> tokenizer = new BufferedReaderTokenizer(in);
+        while (true) {
+            Tokenizer<IOException> lineTokenizer = tokenizer.terminateOn(Token.whitespace("\n")).skip(TokenType.WHITESPACE);
+            SampleAlgebraicExpression left = parser.parse(lineTokenizer.terminateOn(Token.EQUALS));
+            if (lineTokenizer.next() != Token.EQUALS) {
+                throw new ExpressionParserException("Bad line format");
+            }
+            SampleAlgebraicExpression right = parser.parse(lineTokenizer);
+            eqs.add(new AlgebraicEquation<>(left, right));
+            if (!tokenizer.next().equals(Token.whitespace("\n"))) {
+                break;
+            }
         }
         AlgebraicSystem<SampleAlgebraicVariable, SampleAlgebraicFunction, SampleAlgebraicExpression> system =
                 new AlgebraicSystem<>(eqs).trySolve();

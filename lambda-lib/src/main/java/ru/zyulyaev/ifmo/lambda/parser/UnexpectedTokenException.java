@@ -1,5 +1,7 @@
 package ru.zyulyaev.ifmo.lambda.parser;
 
+import ru.zyulyaev.ifmo.lambda.parser.tokenizer.Token;
+
 /**
  * @author zyulyaev
  */

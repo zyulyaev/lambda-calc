@@ -14,6 +14,6 @@ import java.io.PrintWriter;
 public class TaskOne extends BaseTaskExecutor {
     @Override
     protected void execute(BufferedReader in, PrintWriter out) throws IOException, ExpressionParserException {
-        out.println(parser.parse(in));
+        out.println(parse(in));
     }
 }

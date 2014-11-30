@@ -19,6 +19,6 @@ public class TaskFive extends BaseTaskExecutor {
 
     @Override
     protected void execute(BufferedReader in, PrintWriter out) throws IOException, ExpressionParserException {
-        out.println(builder.build(parser.parse(in)));
+        out.println(builder.build(parse(in)));
     }
 }

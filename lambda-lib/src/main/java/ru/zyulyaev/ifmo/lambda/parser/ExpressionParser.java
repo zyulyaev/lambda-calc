@@ -4,41 +4,52 @@ import ru.zyulyaev.ifmo.lambda.Abstraction;
 import ru.zyulyaev.ifmo.lambda.Application;
 import ru.zyulyaev.ifmo.lambda.Expression;
 import ru.zyulyaev.ifmo.lambda.Variable;
+import ru.zyulyaev.ifmo.lambda.parser.tokenizer.Token;
+import ru.zyulyaev.ifmo.lambda.parser.tokenizer.TokenType;
+import ru.zyulyaev.ifmo.lambda.parser.tokenizer.Tokenizer;
 
-import java.io.IOException;
+import java.util.EnumSet;
 
 /**
  * @author zyulyaev
  */
 public class ExpressionParser extends BaseParser<Expression> {
-    private Expression parseAtom(Tokenizer tokenizer) throws IOException, ExpressionParserException {
-        Token token = tokenizer.next();
-        switch (token.type) {
-            case OPEN:
-                Expression result = parse(tokenizer);
-                expect(tokenizer, TokenType.CLOSE);
-                return result;
-            case LITERAL:
-                return new Variable(token.value);
-            case LAMBDA:
-                return parseAbstraction(tokenizer);
-            default:
-                throw new UnexpectedTokenException(token);
-        }
-    }
-
-    private Expression parseAbstraction(Tokenizer tokenizer) throws IOException, ExpressionParserException {
-        String var = expect(tokenizer, TokenType.LITERAL);
-        expect(tokenizer, TokenType.DOT);
-        return new Abstraction(new Variable(var), parse(tokenizer));
-    }
+    private static final EnumSet<TokenType> ATOM_START =
+            EnumSet.of(TokenType.OPEN, TokenType.LITERAL, TokenType.LAMBDA);
 
     @Override
-    Expression parse(Tokenizer tokenizer) throws IOException, ExpressionParserException {
-        Expression app = parseAtom(tokenizer);
-        while (consume(tokenizer, TokenType.WHITESPACE)) {
-            app = new Application(app, parseAtom(tokenizer));
-        }
-        return app;
+    protected <E extends Exception> ParserContext<Expression, E> createContext(Tokenizer<E> tokenizer) {
+        return new ParserContext<Expression, E>(tokenizer.skip(TokenType.WHITESPACE)) {
+            private Expression parseAtom() throws E, ExpressionParserException {
+                Token token = tokenizer.next();
+                switch (token.type) {
+                    case OPEN:
+                        Expression result = parseExpr();
+                        expect(TokenType.CLOSE);
+                        return result;
+                    case LITERAL:
+                        return new Variable(token.value);
+                    case LAMBDA:
+                        return parseAbstraction();
+                    default:
+                        throw new UnexpectedTokenException(token);
+                }
+            }
+
+            private Expression parseAbstraction() throws E, ExpressionParserException {
+                String var = expect(TokenType.LITERAL);
+                expect(TokenType.DOT);
+                return new Abstraction(new Variable(var), parseExpr());
+            }
+
+            @Override
+            protected Expression parseExpr() throws E, ExpressionParserException{
+                Expression app = parseAtom();
+                while (ATOM_START.contains(tokenizer.peek().type)) {
+                    app = new Application(app, parseAtom());
+                }
+                return app;
+            }
+        };
     }
 }

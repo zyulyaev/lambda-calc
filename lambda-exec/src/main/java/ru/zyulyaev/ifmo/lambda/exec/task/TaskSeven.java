@@ -21,7 +21,7 @@ public class TaskSeven extends BaseTaskExecutor {
 
     @Override
     protected void execute(BufferedReader in, PrintWriter out) throws IOException, ExpressionParserException {
-        Optional<LambdaTypeWithContext> type = recognizer.recognizeSimpleType(parser.parse(in));
+        Optional<LambdaTypeWithContext> type = recognizer.recognizeSimpleType(parse(in));
         if (type.isPresent()) {
             out.println(type.get());
         } else {

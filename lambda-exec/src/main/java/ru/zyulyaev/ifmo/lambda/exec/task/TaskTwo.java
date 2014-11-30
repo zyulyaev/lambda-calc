@@ -5,7 +5,9 @@ import org.springframework.stereotype.Component;
 import ru.zyulyaev.ifmo.lambda.analyzer.FreeVariablesFinder;
 import ru.zyulyaev.ifmo.lambda.parser.ExpressionParserException;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * @author zyulyaev
@@ -17,7 +19,7 @@ public class TaskTwo extends BaseTaskExecutor {
 
     @Override
     protected void execute(BufferedReader in, PrintWriter out) throws IOException, ExpressionParserException {
-        finder.findFreeVariables(parser.parse(in)).stream()
+        finder.findFreeVariables(parse(in)).stream()
                 .sorted((a, b) -> a.getName().compareTo(b.getName()))
                 .forEach(out::println);
     }

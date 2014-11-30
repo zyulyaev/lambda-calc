@@ -23,7 +23,7 @@ public class ExpressionSubstitutor {
      */
     public Expression substitute(Expression original, Variable variable, Expression substitution) throws FreshnessConditionException {
         if (original.accept(new FreshnessChecker(variable, substitution))) {
-            throw new FreshnessConditionException();
+            throw new FreshnessConditionException(variable);
         }
         return original.accept(new SubstitutorVisitor(variable, substitution));
     }

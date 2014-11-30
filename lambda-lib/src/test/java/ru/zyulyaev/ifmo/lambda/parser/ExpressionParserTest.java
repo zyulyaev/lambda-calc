@@ -2,19 +2,14 @@ package ru.zyulyaev.ifmo.lambda.parser;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ru.zyulyaev.ifmo.lambda.Abstraction;
-import ru.zyulyaev.ifmo.lambda.Application;
-import ru.zyulyaev.ifmo.lambda.Expression;
-import ru.zyulyaev.ifmo.lambda.Variable;
+import ru.zyulyaev.ifmo.lambda.*;
 
 /**
  * @author zyulyaev
  */
-public class ExpressionParserTest {
-    private final ExpressionParser parser = new ExpressionParser();
-
+public class ExpressionParserTest extends BaseExpressionTest {
     private void test(String expression, Expression valid) throws ExpressionParserException {
-        Assert.assertEquals(valid, parser.parse(expression));
+        Assert.assertEquals(valid, parse(expression));
     }
 
     private Abstraction abs(String var, Expression expr) {

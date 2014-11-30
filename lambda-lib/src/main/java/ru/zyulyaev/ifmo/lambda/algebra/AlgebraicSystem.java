@@ -99,7 +99,7 @@ public class AlgebraicSystem<V extends AlgebraicVariable<V, F, E>, F extends Alg
 
     @Override
     public String toString() {
-        return equations.stream().map(Object::toString).collect(Collectors.joining(", "));
+        return equations.stream().map(Object::toString).collect(Collectors.joining("\n"));
     }
 
     private boolean tryRuleA() {

@@ -3,8 +3,9 @@ package ru.zyulyaev.ifmo.lambda.parser;
 import ru.zyulyaev.ifmo.lambda.algebra.sample.SampleAlgebraicExpression;
 import ru.zyulyaev.ifmo.lambda.algebra.sample.SampleAlgebraicFunction;
 import ru.zyulyaev.ifmo.lambda.algebra.sample.SampleAlgebraicVariable;
+import ru.zyulyaev.ifmo.lambda.parser.tokenizer.TokenType;
+import ru.zyulyaev.ifmo.lambda.parser.tokenizer.Tokenizer;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,18 +14,23 @@ import java.util.List;
  */
 public class SampleAlgebraicExpressionParser extends BaseParser<SampleAlgebraicExpression> {
     @Override
-    SampleAlgebraicExpression parse(Tokenizer tokenizer) throws IOException, ExpressionParserException {
-        String lit = expect(tokenizer, TokenType.LITERAL);
-        if (lit.charAt(0) <= 'h') {
-            expect(tokenizer, TokenType.OPEN);
-            List<SampleAlgebraicExpression> arguments = new ArrayList<>();
-            do {
-                arguments.add(parse(tokenizer));
-            } while (consume(tokenizer, TokenType.COMMA));
-            expect(tokenizer, TokenType.CLOSE);
-            return new SampleAlgebraicFunction(lit, arguments);
-        } else {
-            return new SampleAlgebraicVariable(lit);
-        }
+    protected <E extends Exception> ParserContext<SampleAlgebraicExpression, E> createContext(Tokenizer<E> tokenizer) {
+        return new ParserContext<SampleAlgebraicExpression, E>(tokenizer.skip(TokenType.WHITESPACE)) {
+            @Override
+            protected SampleAlgebraicExpression parseExpr() throws E, ExpressionParserException {
+                String lit = expect(TokenType.LITERAL);
+                if (lit.charAt(0) <= 'h') {
+                    expect(TokenType.OPEN);
+                    List<SampleAlgebraicExpression> arguments = new ArrayList<>();
+                    do {
+                        arguments.add(parseExpr());
+                    } while (consume(TokenType.COMMA));
+                    expect(TokenType.CLOSE);
+                    return new SampleAlgebraicFunction(lit, arguments);
+                } else {
+                    return new SampleAlgebraicVariable(lit);
+                }
+            }
+        };
     }
 }

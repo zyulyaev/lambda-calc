@@ -19,6 +19,6 @@ public class TaskFour extends BaseTaskExecutor {
 
     @Override
     protected void execute(BufferedReader in, PrintWriter out) throws IOException, ExpressionParserException {
-        out.println(normalizer.normalize(parser.parse(in)));
+        out.println(normalizer.normalize(parse(in)));
     }
 }

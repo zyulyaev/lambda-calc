@@ -70,6 +70,9 @@ public class LambdaTypeApplication implements AlgebraicFunction<LambdaTypeVariab
 
     @Override
     public String toString() {
-        return "(" + arguments.get(0) + ")->(" + arguments.get(1) + ")";
+        String left = arguments.get(0).toString();
+        String right = arguments.get(1).toString();
+        if (arguments.get(0).isFunction()) left = "(" + left + ")";
+        return left + "->" + right;
     }
 }

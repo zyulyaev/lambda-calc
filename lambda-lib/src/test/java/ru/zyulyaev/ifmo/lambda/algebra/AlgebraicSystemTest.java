@@ -4,10 +4,10 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
+import ru.zyulyaev.ifmo.lambda.BaseSampleAlgebraicExpressionTest;
 import ru.zyulyaev.ifmo.lambda.algebra.sample.SampleAlgebraicExpression;
 import ru.zyulyaev.ifmo.lambda.algebra.sample.SampleAlgebraicFunction;
 import ru.zyulyaev.ifmo.lambda.algebra.sample.SampleAlgebraicVariable;
-import ru.zyulyaev.ifmo.lambda.parser.SampleAlgebraicExpressionParser;
 import ru.zyulyaev.ifmo.lambda.parser.ExpressionParserException;
 
 import java.util.ArrayList;
@@ -16,13 +16,7 @@ import java.util.List;
 /**
  * Created by nikita on 22.11.14.
  */
-public class AlgebraicSystemTest {
-    private final SampleAlgebraicExpressionParser parser = new SampleAlgebraicExpressionParser();
-
-    private SampleAlgebraicExpression parse(String expr) throws ExpressionParserException {
-        return parser.parse(expr);
-    }
-
+public class AlgebraicSystemTest extends BaseSampleAlgebraicExpressionTest {
     private AlgebraicSystem<SampleAlgebraicVariable, SampleAlgebraicFunction, SampleAlgebraicExpression> sys(String... eqs) throws ExpressionParserException {
         List<AlgebraicEquation<SampleAlgebraicVariable, SampleAlgebraicFunction, SampleAlgebraicExpression>> equations = new ArrayList<>();
         for (String e : eqs) {
